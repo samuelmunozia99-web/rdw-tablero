@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RDW LLC — Centro de Mando</title>
+<style>
+  :root{
+    --bg:#0d1013; --card:#161b1f; --card2:#1c2328; --line:#28323a; --txt:#e9e7e2; --dim:#98a2a8; --faint:#5a686f;
+    --ok:#3ddc84; --warn:#ffd166; --bad:#ff6b6b; --pause:#8a939b; --new:#4d9fff; --gold:#d4b46a; --ai:#e879c7;
+    --mauro:#4d9fff; --samuel:#3ddc84; --jesus:#ffb347; --jose:#c792ea;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{overflow-x:hidden;width:100%}
+  body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.45;padding:0 0 80px;max-width:1050px;margin:0 auto}
+  header{padding:18px 15px 12px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+  .brand{font-size:19px;font-weight:800;letter-spacing:-.3px} .brand span{color:var(--samuel)}
+  .stamp{font-size:11px;color:var(--faint);margin-top:3px}
+  .editbtn{background:var(--card);border:1px solid var(--gold);color:var(--gold);border-radius:20px;padding:7px 16px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;flex-shrink:0}
+  .editbtn.on{background:var(--gold);color:#0d1013}
+  .rule{background:linear-gradient(90deg,rgba(212,180,106,.14),transparent);border-left:3px solid var(--gold);margin:12px 15px 0;padding:9px 13px;border-radius:0 8px 8px 0;font-size:12.5px}
+  .rule b{color:var(--gold)}
+  .editbar{display:none;margin:12px 15px 0;background:rgba(212,180,106,.09);border:1px dashed var(--gold);border-radius:10px;padding:11px 13px;font-size:12.5px;color:var(--dim)}
+  body.editing .editbar{display:block}
+  .editbar b{color:var(--gold)}
+  .btnrow{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap}
+  .btn{background:var(--gold);color:#0d1013;border:none;border-radius:8px;padding:8px 15px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit}
+  .btn.sec{background:var(--card2);color:var(--txt);border:1px solid var(--line)}
+  .btn.sm{padding:5px 11px;font-size:11.5px}
+  nav{display:flex;gap:6px;padding:14px 15px 0;overflow-x:auto}
+  nav button{background:var(--card);border:1px solid var(--line);color:var(--dim);border-radius:20px;padding:7px 15px;font-size:12.5px;font-weight:600;white-space:nowrap;cursor:pointer;font-family:inherit}
+  nav button.on{background:var(--txt);color:var(--bg);border-color:var(--txt)}
+  main{padding:16px 15px 0}
+  section{display:none} section.on{display:block}
+  h2{font-size:11.5px;letter-spacing:2px;color:var(--faint);text-transform:uppercase;margin:22px 0 10px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+  h2:first-child{margin-top:0}
+  .addbtn{display:none;background:var(--card2);border:1px solid var(--gold);color:var(--gold);border-radius:7px;padding:4px 11px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:0;text-transform:none}
+  body.editing .addbtn{display:inline-block}
+  .kpis{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:9px 14px;min-width:74px;text-align:center;flex-shrink:0}
+  .kpi b{display:block;font-size:19px;line-height:1.1} .kpi small{font-size:10.5px;color:var(--dim)}
+  .kpi.g b{color:var(--ok)} .kpi.y b{color:var(--warn)} .kpi.p b{color:var(--pause)} .kpi.n b{color:var(--new)} .kpi.r b{color:var(--bad);font-size:14px;padding-top:4px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:11px}
+  .bcard{background:var(--card);border:1px solid var(--line);border-top:3px solid var(--line);border-radius:13px;padding:13px 15px;position:relative}
+  .bcard.g{border-top-color:var(--ok)} .bcard.y{border-top-color:var(--warn)}
+  .bcard.p{border-top-color:var(--pause)} .bcard.n{border-top-color:var(--new)} .bcard.x{border-top-color:var(--faint);opacity:.8}
+  .bh{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:5px;margin-bottom:6px}
+  .bname{font-weight:700;font-size:14.5px}
+  .chip{font-size:9.5px;font-weight:800;letter-spacing:.5px;border-radius:5px;padding:3px 8px}
+  .chip.g{background:rgba(61,220,132,.16);color:var(--ok)} .chip.y{background:rgba(255,209,102,.16);color:var(--warn)}
+  .chip.p{background:rgba(138,147,155,.18);color:var(--pause)} .chip.n{background:rgba(77,159,255,.16);color:var(--new)}
+  .chip.x{background:rgba(90,104,111,.2);color:var(--faint)}
+  .ball{font-size:11px;font-weight:700;color:var(--gold);margin-bottom:5px}
+  .stage{font-size:10.5px;color:var(--new);font-weight:700;margin-bottom:6px}
+  .br{font-size:12.2px;color:var(--dim);margin:3px 0} .br b{color:var(--txt);font-weight:600}
+  .day-tag{display:inline-block;font-size:10px;color:var(--faint);border:1px solid var(--line);border-radius:4px;padding:1px 6px;margin-top:7px}
+  .del{display:none;position:absolute;top:8px;right:8px;background:rgba(255,107,107,.13);border:1px solid rgba(255,107,107,.4);color:var(--bad);border-radius:6px;width:22px;height:22px;font-size:12px;cursor:pointer;line-height:1;font-family:inherit}
+  body.editing .del{display:block}
+  .ed{display:none} body.editing .ed{display:block} body.editing .vw{display:none}
+  .ed select,.ed input{width:100%;background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:7px;padding:6px 8px;font-size:12px;font-family:inherit;margin-bottom:6px}
+  .ed label{display:block;font-size:9.5px;letter-spacing:1px;color:var(--faint);text-transform:uppercase;margin-bottom:2px}
+  .ed .two{display:flex;gap:6px} .ed .two>div{flex:1}
+  .week{display:flex;gap:5px;margin-bottom:14px}
+  .day{flex:1;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 4px;text-align:center;position:relative}
+  .day .d{font-size:9.5px;letter-spacing:1px;color:var(--faint);text-transform:uppercase}
+  .day .m{font-size:11px;font-weight:700;margin-top:3px;line-height:1.25}
+  .day.today{border-color:var(--gold);background:rgba(212,180,106,.09)} .day.today .d{color:var(--gold)}
+  .day input{width:100%;background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:6px;padding:4px;font-size:10.5px;font-family:inherit;text-align:center;margin-top:4px}
+  .day .todaybtn{background:none;border:none;color:var(--faint);font-size:9px;cursor:pointer;font-family:inherit;margin-top:4px;text-decoration:underline}
+  .person{display:flex;gap:11px;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:11px 13px;margin-bottom:8px;position:relative}
+  .av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:#0d1013;flex-shrink:0}
+  .pi{flex:1} .pi b{font-size:13.5px} .pi span{display:block;font-size:12.2px;color:var(--dim);margin-top:1px}
+  .pi .blk{color:var(--bad);font-size:11.5px;font-weight:600;margin-top:3px}
+  .goals{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 15px}
+  .goal{font-size:13px;margin:6px 0;color:var(--dim);display:flex;gap:7px;align-items:center}
+  .goal b{color:var(--txt);font-weight:600}
+  .goal.d{color:var(--ok)} .goal.w{color:var(--warn)}
+  .goal select{background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:6px;padding:5px;font-size:11px;font-family:inherit;width:110px;flex-shrink:0}
+  .goal input{flex:1;background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:6px;padding:5px 8px;font-size:12px;font-family:inherit}
+  .goal .x{background:none;border:none;color:var(--bad);cursor:pointer;font-size:14px;font-family:inherit}
+  .pipe{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px}
+  .col{min-width:150px;flex:1;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 9px}
+  .col h4{font-size:9.5px;letter-spacing:1.3px;color:var(--faint);text-transform:uppercase;margin-bottom:9px;text-align:center}
+  .tk{background:var(--card2);border:1px solid var(--line);border-left:3px solid var(--new);border-radius:8px;padding:7px 9px;margin-bottom:6px}
+  .tk b{display:block;font-size:12px} .tk small{color:var(--dim);font-size:10px;line-height:1.3;display:block;margin-top:2px}
+  .tk.g{border-left-color:var(--ok)} .tk.y{border-left-color:var(--warn)} .tk.p{border-left-color:var(--pause);opacity:.6} .tk.x{border-left-color:var(--faint);opacity:.55}
+  .empty{border:1px dashed var(--line);border-radius:8px;padding:11px 6px;text-align:center;color:var(--faint);font-size:10px}
+  .hint{font-size:11.5px;color:var(--faint);font-style:italic;margin-bottom:10px;display:none}
+  body.editing .hint{display:block}
+  .wrow{display:flex;gap:11px;background:var(--card);border:1px solid var(--line);border-left:3px solid var(--warn);border-radius:10px;padding:10px 13px;margin-bottom:7px;position:relative}
+  .wrow.hot{border-left-color:var(--bad)}
+  .wwho{font-size:11px;font-weight:800;padding-top:1px;flex-shrink:0;width:62px}
+  .wtxt{font-size:12.5px;color:var(--dim);flex:1} .wtxt b{color:var(--txt);font-weight:600;display:block;font-size:13px}
+  .wage{font-size:10.5px;color:var(--faint);margin-top:2px} .wage.hot{color:var(--bad);font-weight:700}
+  .wrow .ed{width:100%}
+  #out{display:none;width:100%;height:170px;background:#0a0d0f;border:1px solid var(--gold);border-radius:10px;color:var(--ok);font-family:monospace;font-size:10.5px;padding:10px;margin-top:10px;resize:vertical}
+  footer{margin-top:34px;padding:14px 15px 0;border-top:1px solid var(--line);text-align:center;color:var(--faint);font-size:11px}
+</style>
+</head>
+<body>
+
+<header>
+  <div><div class="brand">RDW <span>LLC</span> · Centro de Mando</div><div class="stamp" id="stamp"></div></div>
+  <button class="editbtn" id="edit">✏️ Editar</button>
+</header>
+<div class="rule"><b>Si no está escrito aquí, no está pasando.</b> Toda tarea nueva se anuncia ANTES de arrancarla.</div>
+
+<div class="editbar">
+  <b>Modo edición activo.</b> Puedes editar TODO: marcas, la semana, las personas, los objetivos y la lista de lo que estamos esperando. Al terminar dale a <b>Copiar actualización</b> y pega el resultado al hub — él lo guarda en la bóveda y publica el tablero.
+  <div class="btnrow">
+    <button class="btn" id="gen">📋 Copiar actualización</button>
+    <button class="btn sec sm" id="fecha">📅 Cambiar fecha</button>
+  </div>
+  <textarea id="out" readonly></textarea>
+</div>
+
+<nav>
+  <button class="on" data-t="mc">Estado</button>
+  <button data-t="wr">La Semana</button>
+  <button data-t="pl">Pipeline</button>
+  <button data-t="wt">Esperando</button>
+</nav>
+
+<main>
+<section id="mc" class="on">
+  <div class="kpis" id="kpis"></div>
+  <h2><span>Marcas</span><button class="addbtn" id="addBrand">+ Agregar marca</button></h2>
+  <div class="grid" id="brands"></div>
+</section>
+
+<section id="wr">
+  <h2><span>Foco de la semana · una marca dueña por día</span></h2>
+  <div class="hint">Escribe qué marca es dueña de cada día. "marcar hoy" define el día actual.</div>
+  <div class="week" id="week"></div>
+  <h2><span>Quién está en qué</span><button class="addbtn" id="addPerson">+ Agregar persona</button></h2>
+  <div id="people"></div>
+  <h2><span>Objetivos de la semana</span><button class="addbtn" id="addGoal">+ Agregar objetivo</button></h2>
+  <div class="goals" id="goals"></div>
+</section>
+
+<section id="pl">
+  <h2><span>La Máquina · en qué estación está cada marca</span></h2>
+  <div class="hint">Este tablero se arma solo con la "Etapa" que elijas en cada marca (pestaña Estado).</div>
+  <div class="pipe" id="pipe"></div>
+</section>
+
+<section id="wt">
+  <h2><span>La pelota está afuera · lo que hay que cobrar</span><button class="addbtn" id="addWait">+ Agregar</button></h2>
+  <div id="waiting"></div>
+</section>
+</main>
+
+<footer>RDW LLC · Centro de Mando v1 · la bóveda es la fuente, esta página es su cara</footer>
+
+<script>
+/* ══════════════ BLOQUE DE DATOS — lo único que el hub reescribe ══════════════ */
+const RDW = {
+  fecha: "06 ago 2026",
+  estaciones: ["0 · Prospecto","1 · Estrategia","2 · DNA","3 · Contenido","4 · Pauta","5 · Reporte","— En pausa","por definir"],
+  marcas: [
+    { n:"Georgina Barnes (UK)", e:"g", pelota:"RDW-AI", etapa:"2 · DNA", dia:"Lunes",
+      foco:"Plan Ago-Dic terminado · DNA v2 desde cero",
+      sig:"Redacción del DNA + diff para datar la contaminación",
+      esp:"Mauro: OK y envío del plan · José: MARKETOR-608 y fotos" },
+    { n:"Equilibre", e:"n", pelota:"Mauricio", etapa:"1 · Estrategia", dia:"Martes",
+      foco:"Arranque post-firma con Karen Martínez (500k+)",
+      sig:"Reunión 11am · explorar Material Equilibre del Drive",
+      esp:"Definiciones de la reunión de mañana" },
+    { n:"Aborígenes", e:"y", pelota:"Mauricio", etapa:"5 · Reporte", dia:"Miércoles",
+      foco:"3 informes · convocatoria Ella Exporta África",
+      sig:"Edición final en una pasada al llegar los datos",
+      esp:"Stats Ads Manager (2 cuentas) · facturación junio · rubros" },
+    { n:"SEDI", e:"y", pelota:"Cliente", etapa:"0 · Prospecto", dia:"Viernes",
+      foco:"Oferta enviada · junta fue el miércoles",
+      sig:"Conocer el resultado de la junta", esp:"Respuesta del cliente vía Mauro" },
+    { n:"Marie Louise COL", e:"p", pelota:"Mauricio", etapa:"— En pausa", dia:"Jueves",
+      foco:"Pausa hasta cerrar GB · playbook digerido",
+      sig:"Al volver: renovar remarketing (regla 15-20 días)", esp:"Orden de reactivación" },
+    { n:"Marie Louise USA", e:"p", pelota:"José", etapa:"— En pausa", dia:"Jueves",
+      foco:"Diagnóstico listo: el problema es la tienda, no la pauta",
+      sig:"Al volver: carga 13.5s + checkout ANTES que pauta",
+      esp:"Orden de reactivación · ajustes Cali/USA de José" },
+    { n:"Renew Deep Wellness USA", e:"x", pelota:"Mauricio", etapa:"por definir", dia:"—",
+      foco:"por definir", sig:"por definir", esp:"por definir" },
+    { n:"Renew Deep Wellness COL", e:"x", pelota:"Mauricio", etapa:"por definir", dia:"—",
+      foco:"por definir", sig:"por definir", esp:"por definir" },
+    { n:"AffirmFirst", e:"x", pelota:"Jesús", etapa:"por definir", dia:"—",
+      foco:"por definir", sig:"por definir", esp:"por definir" }
+  ],
+  semana: [ {d:"Lun",m:"Georgina B."},{d:"Mar",m:"Equilibre"},{d:"Mié",m:"Aborígenes"},
+            {d:"Jue",m:"Marie Louise",hoy:true},{d:"Vie",m:"SEDI + overflow"} ],
+  gente: [
+    {i:"M",c:"var(--mauro)",n:"Mauricio",t:"Reunión Equilibre 11am · los 3 datos de Aborígenes · resultado junta SEDI",blk:""},
+    {i:"S",c:"var(--samuel)",n:"Samuel",t:"Sistema de orden de la agencia · DNA GB v2 · colegio y entreno",blk:""},
+    {i:"J",c:"var(--jesus)",n:"Jesús",t:"Producción en espera de la parrilla nueva",blk:"⏸ bloqueado por: DNA de GB"},
+    {i:"J",c:"var(--jose)",n:"José",t:"Números MARKETOR-608 · fotos de producto GB · ajustes ML Cali/USA",blk:""},
+    {i:"AI",c:"var(--ai)",n:"RDW-AI",t:"Cowork: DNA y documentos · el hub: bóveda, briefs y este tablero",blk:""}
+  ],
+  objetivos: [
+    {s:"d",t:"Plan Dolcezza terminado y en revisión"},
+    {s:"d",t:"Equilibre firmado — Karen Martínez"},
+    {s:"d",t:"Aborígenes — inversión real verificada ($3.9M COP)"},
+    {s:"w",t:"DNA GB v2 — fuentes completas, en redacción"},
+    {s:"w",t:"Centro de Mando — arrancando"}
+  ],
+  esperando: [
+    {q:"José",t:"Números de la MARKETOR-608",d:"Lo único que falta para decidir si se corta",age:"48 h",hot:true},
+    {q:"José",t:"Fotos de producto de GB",d:"Sin fotos el DNA llega hasta donde llega el texto",age:"48 h",hot:true},
+    {q:"Mauricio",t:"Los 3 datos de Aborígenes",d:"Stats Ads Manager · facturación junio · rubros",age:"nuevo",hot:false},
+    {q:"Mauricio",t:"Resultado de la junta de SEDI",d:"La junta fue el miércoles, sin noticia escrita",age:"48 h",hot:true},
+    {q:"Mauricio",t:"Tabla de fees de la base instalada",d:"Prerrequisito para saber cuántos clientes aguantamos",age:"48 h",hot:false},
+    {q:"Cliente",t:"Corchetes del acuerdo de Aborígenes",d:"Lo único que falta para cerrarlo",age:"3 días",hot:true}
+  ]
+};
+
+/* ══════════════ RENDER ══════════════ */
+const $ = s => document.querySelector(s);
+const EST = {g:"ACTIVA", y:"ESPERANDO", n:"ARRANCANDO", p:"EN PAUSA", x:"POR DEFINIR"};
+const PERS = ["Mauricio","Samuel","Jesús","José","Cliente","RDW-AI"];
+const DIAS = ["Lunes","Martes","Miércoles","Jueves","Viernes","—"];
+const COLORES = {"Mauricio":"var(--mauro)","Samuel":"var(--samuel)","Jesús":"var(--jesus)","José":"var(--jose)","RDW-AI":"var(--ai)","Cliente":"var(--dim)"};
+const esc = s => String(s==null?"":s).replace(/"/g,'&quot;');
+const opt = (arr,v) => arr.map(o=>`<option ${v===o?'selected':''}>${o}</option>`).join('');
+
+function render(){
+  $('#stamp').textContent = "Actualizado por el hub — " + RDW.fecha;
+  const c = e => RDW.marcas.filter(m=>m.e===e).length;
+  $('#kpis').innerHTML = `
+    <div class="kpi g"><b>${c('g')}</b><small>activa</small></div>
+    <div class="kpi n"><b>${c('n')}</b><small>arrancando</small></div>
+    <div class="kpi y"><b>${c('y')}</b><small>esperando</small></div>
+    <div class="kpi p"><b>${c('p')}</b><small>en pausa</small></div>
+    <div class="kpi"><b>${c('x')}</b><small>por definir</small></div>
+    <div class="kpi r"><b>${RDW.esperando.filter(w=>w.hot).length} vencidos</b><small>por cobrar</small></div>`;
+
+  /* ---- MARCAS ---- */
+  $('#brands').innerHTML = RDW.marcas.map((m,i)=>`
+    <div class="bcard ${m.e}">
+      <button class="del" data-del="marcas" data-i="${i}">✕</button>
+      <div class="bh"><span class="bname vw">${m.n}</span><span class="chip ${m.e} vw">${EST[m.e]}</span></div>
+      <div class="vw">
+        <div class="ball">⚡ La pelota: ${m.pelota}</div>
+        <div class="stage">▸ ${m.etapa}</div>
+        <div class="br"><b>Foco:</b> ${m.foco}</div>
+        <div class="br"><b>Siguiente:</b> ${m.sig}</div>
+        <div class="br"><b>Espera:</b> ${m.esp}</div>
+        <span class="day-tag">día de foco: ${m.dia}</span>
+      </div>
+      <div class="ed">
+        <label>Nombre de la marca</label><input data-a="marcas" data-i="${i}" data-k="n" value="${esc(m.n)}">
+        <div class="two">
+          <div><label>Estado</label><select data-a="marcas" data-i="${i}" data-k="e">${Object.keys(EST).map(k=>`<option value="${k}" ${m.e===k?'selected':''}>${EST[k]}</option>`).join('')}</select></div>
+          <div><label>Pelota</label><select data-a="marcas" data-i="${i}" data-k="pelota">${opt(PERS,m.pelota)}</select></div>
+        </div>
+        <label>Etapa en La Máquina</label><select data-a="marcas" data-i="${i}" data-k="etapa">${opt(RDW.estaciones,m.etapa)}</select>
+        <label>Foco</label><input data-a="marcas" data-i="${i}" data-k="foco" value="${esc(m.foco)}">
+        <label>Siguiente acción</label><input data-a="marcas" data-i="${i}" data-k="sig" value="${esc(m.sig)}">
+        <label>Esperando a</label><input data-a="marcas" data-i="${i}" data-k="esp" value="${esc(m.esp)}">
+        <label>Día de foco</label><select data-a="marcas" data-i="${i}" data-k="dia">${opt(DIAS,m.dia)}</select>
+      </div>
+    </div>`).join('');
+
+  /* ---- SEMANA ---- */
+  $('#week').innerHTML = RDW.semana.map((d,i)=>`
+    <div class="day ${d.hoy?'today':''}">
+      <div class="d">${d.hoy?'HOY · '+d.d:d.d}</div>
+      <div class="m vw">${d.m}</div>
+      <div class="ed">
+        <input data-a="semana" data-i="${i}" data-k="m" value="${esc(d.m)}">
+        <button class="todaybtn" data-today="${i}">${d.hoy?'✓ es hoy':'marcar hoy'}</button>
+      </div>
+    </div>`).join('');
+
+  /* ---- PERSONAS ---- */
+  $('#people').innerHTML = RDW.gente.map((p,i)=>`
+    <div class="person">
+      <button class="del" data-del="gente" data-i="${i}">✕</button>
+      <div class="av" style="background:${COLORES[p.n]||p.c||'var(--dim)'}">${p.i}</div>
+      <div class="pi">
+        <div class="vw"><b>${p.n}</b><span>${p.t}</span>${p.blk?`<div class="blk">${p.blk}</div>`:''}</div>
+        <div class="ed">
+          <div class="two">
+            <div><label>Inicial</label><input data-a="gente" data-i="${i}" data-k="i" value="${esc(p.i)}"></div>
+            <div><label>Nombre</label><input data-a="gente" data-i="${i}" data-k="n" value="${esc(p.n)}"></div>
+          </div>
+          <label>En qué está hoy</label><input data-a="gente" data-i="${i}" data-k="t" value="${esc(p.t)}">
+          <label>Qué lo bloquea (opcional)</label><input data-a="gente" data-i="${i}" data-k="blk" value="${esc(p.blk)}" placeholder="⏸ bloqueado por: ...">
+        </div>
+      </div>
+    </div>`).join('');
+
+  /* ---- OBJETIVOS ---- */
+  $('#goals').innerHTML = RDW.objetivos.map((g,i)=>`
+    <div class="goal ${g.s}">
+      <span class="vw">${g.s==='d'?'✅':'⏳'} ${g.t}</span>
+      <select class="ed" style="display:none" data-a="objetivos" data-i="${i}" data-k="s">
+        <option value="d" ${g.s==='d'?'selected':''}>✅ Cumplido</option>
+        <option value="w" ${g.s==='w'?'selected':''}>⏳ En curso</option>
+      </select>
+      <input class="ed" style="display:none" data-a="objetivos" data-i="${i}" data-k="t" value="${esc(g.t)}">
+      <button class="x ed" style="display:none" data-del="objetivos" data-i="${i}">✕</button>
+    </div>`).join('');
+  if(document.body.classList.contains('editing'))
+    document.querySelectorAll('.goal .ed').forEach(e=>e.style.display='');
+
+  /* ---- PIPELINE ---- */
+  $('#pipe').innerHTML = RDW.estaciones.map(st=>{
+    const items = RDW.marcas.filter(m=>m.etapa===st);
+    return `<div class="col"><h4>${st}</h4>${items.length?items.map(m=>`<div class="tk ${m.e}"><b>${m.n}</b><small>${m.sig}</small></div>`).join(''):'<div class="empty">— libre —</div>'}</div>`;
+  }).join('');
+
+  /* ---- ESPERANDO ---- */
+  $('#waiting').innerHTML = RDW.esperando.map((w,i)=>`
+    <div class="wrow ${w.hot?'hot':''}">
+      <button class="del" data-del="esperando" data-i="${i}">✕</button>
+      <div class="wwho vw" style="color:${COLORES[w.q]||'var(--dim)'}">${w.q}</div>
+      <div class="wtxt">
+        <div class="vw"><b>${w.t}</b>${w.d}<div class="wage ${w.hot?'hot':''}">esperando hace ${w.age}</div></div>
+        <div class="ed">
+          <div class="two">
+            <div><label>Quién debe</label><select data-a="esperando" data-i="${i}" data-k="q">${opt(PERS,w.q)}</select></div>
+            <div><label>Hace cuánto</label><input data-a="esperando" data-i="${i}" data-k="age" value="${esc(w.age)}"></div>
+          </div>
+          <label>Qué debe</label><input data-a="esperando" data-i="${i}" data-k="t" value="${esc(w.t)}">
+          <label>Por qué importa</label><input data-a="esperando" data-i="${i}" data-k="d" value="${esc(w.d)}">
+          <label>Urgencia</label><select data-a="esperando" data-i="${i}" data-k="hot">
+            <option value="true" ${w.hot?'selected':''}>🔴 Vencido</option>
+            <option value="false" ${!w.hot?'selected':''}>🟡 En plazo</option></select>
+        </div>
+      </div>
+    </div>`).join('');
+
+  /* listeners */
+  document.querySelectorAll('[data-a]').forEach(el=>{
+    el.onchange = el.oninput = e => {
+      const {a,i,k} = e.target.dataset;
+      let v = e.target.value;
+      if(k==='hot') v = (v==='true');
+      RDW[a][+i][k] = v;
+      if(k==='e'||k==='etapa'||k==='hot'||k==='q'||k==='s'||k==='n') { const sc=window.scrollY; render(); window.scrollTo(0,sc); }
+    };
+  });
+  document.querySelectorAll('[data-del]').forEach(el=>{
+    el.onclick = e => { const {del,i} = e.target.dataset; RDW[del].splice(+i,1); const sc=window.scrollY; render(); window.scrollTo(0,sc); };
+  });
+  document.querySelectorAll('[data-today]').forEach(el=>{
+    el.onclick = e => { const i=+e.target.dataset.today; RDW.semana.forEach((d,j)=>d.hoy=(j===i)); const sc=window.scrollY; render(); window.scrollTo(0,sc); };
+  });
+}
+render();
+
+/* ---- controles ---- */
+$('#edit').onclick = () => {
+  document.body.classList.toggle('editing');
+  const on = document.body.classList.contains('editing');
+  $('#edit').classList.toggle('on', on);
+  $('#edit').textContent = on ? '✓ Listo' : '✏️ Editar';
+  if(!on) $('#out').style.display='none';
+  render();
+};
+$('#addBrand').onclick = () => { RDW.marcas.push({n:"Marca nueva",e:"x",pelota:"Mauricio",etapa:"por definir",dia:"—",foco:"por definir",sig:"por definir",esp:"por definir"}); render(); };
+$('#addPerson').onclick = () => { RDW.gente.push({i:"?",c:"var(--dim)",n:"Nombre",t:"en qué está",blk:""}); render(); };
+$('#addGoal').onclick = () => { RDW.objetivos.push({s:"w",t:"Objetivo nuevo"}); render(); };
+$('#addWait').onclick = () => { RDW.esperando.push({q:"Mauricio",t:"Qué debe",d:"por qué importa",age:"nuevo",hot:false}); render(); };
+$('#fecha').onclick = () => { const f = prompt("Fecha del tablero:", RDW.fecha); if(f){ RDW.fecha=f; render(); } };
+$('#gen').onclick = () => {
+  const txt = "Actualiza el Centro de Mando con estos datos, guárdalos en la bóveda y publica el tablero:\n\n" +
+    JSON.stringify({fecha:RDW.fecha,marcas:RDW.marcas,semana:RDW.semana,gente:RDW.gente,objetivos:RDW.objetivos,esperando:RDW.esperando}, null, 1);
+  const t = $('#out'); t.style.display='block'; t.value = txt; t.select();
+  try{ navigator.clipboard.writeText(txt); $('#gen').textContent='✅ Copiado'; setTimeout(()=>$('#gen').textContent='📋 Copiar actualización',2000);}catch(e){}
+};
+document.querySelectorAll('nav button').forEach(b=>{
+  b.onclick = () => {
+    document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('section').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); document.getElementById(b.dataset.t).classList.add('on');
+    window.scrollTo({top:0,behavior:'smooth'});
+  };
+});
+</script>
+</body>
+</html>
