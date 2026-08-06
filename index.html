@@ -155,61 +155,238 @@
 <script>
 /* ══════════════ BLOQUE DE DATOS — lo único que el hub reescribe ══════════════ */
 const RDW = {
-  fecha: "06 ago 2026",
-  estaciones: ["0 · Prospecto","1 · Estrategia","2 · DNA","3 · Contenido","4 · Pauta","5 · Reporte","— En pausa","por definir"],
-  marcas: [
-    { n:"Georgina Barnes (UK)", e:"g", pelota:"RDW-AI", etapa:"2 · DNA", dia:"Lunes",
-      foco:"Plan Ago-Dic terminado · DNA v2 desde cero",
-      sig:"Redacción del DNA + diff para datar la contaminación",
-      esp:"Mauro: OK y envío del plan · José: MARKETOR-608 y fotos" },
-    { n:"Equilibre", e:"n", pelota:"Mauricio", etapa:"1 · Estrategia", dia:"Martes",
-      foco:"Arranque post-firma con Karen Martínez (500k+)",
-      sig:"Reunión 11am · explorar Material Equilibre del Drive",
-      esp:"Definiciones de la reunión de mañana" },
-    { n:"Aborígenes", e:"y", pelota:"Mauricio", etapa:"5 · Reporte", dia:"Miércoles",
-      foco:"3 informes · convocatoria Ella Exporta África",
-      sig:"Edición final en una pasada al llegar los datos",
-      esp:"Stats Ads Manager (2 cuentas) · facturación junio · rubros" },
-    { n:"SEDI", e:"y", pelota:"Cliente", etapa:"0 · Prospecto", dia:"Viernes",
-      foco:"Oferta enviada · junta fue el miércoles",
-      sig:"Conocer el resultado de la junta", esp:"Respuesta del cliente vía Mauro" },
-    { n:"Marie Louise COL", e:"p", pelota:"Mauricio", etapa:"— En pausa", dia:"Jueves",
-      foco:"Pausa hasta cerrar GB · playbook digerido",
-      sig:"Al volver: renovar remarketing (regla 15-20 días)", esp:"Orden de reactivación" },
-    { n:"Marie Louise USA", e:"p", pelota:"José", etapa:"— En pausa", dia:"Jueves",
-      foco:"Diagnóstico listo: el problema es la tienda, no la pauta",
-      sig:"Al volver: carga 13.5s + checkout ANTES que pauta",
-      esp:"Orden de reactivación · ajustes Cali/USA de José" },
-    { n:"Renew Deep Wellness USA", e:"x", pelota:"Mauricio", etapa:"por definir", dia:"—",
-      foco:"por definir", sig:"por definir", esp:"por definir" },
-    { n:"Renew Deep Wellness COL", e:"x", pelota:"Mauricio", etapa:"por definir", dia:"—",
-      foco:"por definir", sig:"por definir", esp:"por definir" },
-    { n:"AffirmFirst", e:"x", pelota:"Jesús", etapa:"por definir", dia:"—",
-      foco:"por definir", sig:"por definir", esp:"por definir" }
+  "fecha": "06 ago 2026 · cierre",
+  "estaciones": [
+    "0 · Prospecto",
+    "1 · Estrategia",
+    "2 · DNA",
+    "3 · Contenido",
+    "4 · Pauta",
+    "5 · Reporte",
+    "— En pausa",
+    "por definir"
   ],
-  semana: [ {d:"Lun",m:"Georgina B."},{d:"Mar",m:"Equilibre"},{d:"Mié",m:"Aborígenes"},
-            {d:"Jue",m:"Marie Louise",hoy:true},{d:"Vie",m:"SEDI + overflow"} ],
-  gente: [
-    {i:"M",c:"var(--mauro)",n:"Mauricio",t:"Reunión Equilibre 11am · los 3 datos de Aborígenes · resultado junta SEDI",blk:""},
-    {i:"S",c:"var(--samuel)",n:"Samuel",t:"Sistema de orden de la agencia · DNA GB v2 · colegio y entreno",blk:""},
-    {i:"J",c:"var(--jesus)",n:"Jesús",t:"Producción en espera de la parrilla nueva",blk:"⏸ bloqueado por: DNA de GB"},
-    {i:"J",c:"var(--jose)",n:"José",t:"Números MARKETOR-608 · fotos de producto GB · ajustes ML Cali/USA",blk:""},
-    {i:"AI",c:"var(--ai)",n:"RDW-AI",t:"Cowork: DNA y documentos · el hub: bóveda, briefs y este tablero",blk:""}
+  "marcas": [
+    {
+      "n": "Georgina Barnes (UK)",
+      "e": "g",
+      "pelota": "RDW-AI",
+      "etapa": "2 · DNA",
+      "dia": "Lunes",
+      "foco": "Plan Dolcezza terminado · DNA v2 desde cero con el dossier",
+      "sig": "Diff de los 2 exports para datar la contaminación · redacción del DNA",
+      "esp": "Mauro: envío del plan · José: MARKETOR-608 y fotos"
+    },
+    {
+      "n": "Equilibre",
+      "e": "n",
+      "pelota": "Mauricio",
+      "etapa": "1 · Estrategia",
+      "dia": "Martes",
+      "foco": "Arranque post-firma con Karen Martínez (500k+)",
+      "sig": "Reunión 11am · explorar Material Equilibre del Drive",
+      "esp": "Definiciones de la reunión de mañana"
+    },
+    {
+      "n": "Aborígenes",
+      "e": "y",
+      "pelota": "Mauricio",
+      "etapa": "5 · Reporte",
+      "dia": "Miércoles",
+      "foco": "3 informes · convocatoria Ella Exporta África",
+      "sig": "Edición final en una pasada al llegar los datos",
+      "esp": "Stats Ads Manager (2 cuentas) · facturación junio · rubros"
+    },
+    {
+      "n": "SEDI",
+      "e": "y",
+      "pelota": "Cliente",
+      "etapa": "0 · Prospecto",
+      "dia": "Viernes",
+      "foco": "Oferta enviada · junta fue el miércoles",
+      "sig": "Conocer el resultado de la junta",
+      "esp": "Respuesta del cliente vía Mauro"
+    },
+    {
+      "n": "Marie Louise COL",
+      "e": "p",
+      "pelota": "Mauricio",
+      "etapa": "— En pausa",
+      "dia": "Jueves",
+      "foco": "Pausa hasta cerrar GB · playbook digerido",
+      "sig": "Al volver: renovar remarketing (regla 15-20 días)",
+      "esp": "Orden de reactivación"
+    },
+    {
+      "n": "Marie Louise USA",
+      "e": "p",
+      "pelota": "José",
+      "etapa": "— En pausa",
+      "dia": "Jueves",
+      "foco": "Diagnóstico listo: el problema es la tienda, no la pauta",
+      "sig": "Al volver: carga 13.5s + checkout ANTES que pauta",
+      "esp": "Orden de reactivación · ajustes Cali/USA de José"
+    },
+    {
+      "n": "Renew Deep Wellness USA",
+      "e": "x",
+      "pelota": "Mauricio",
+      "etapa": "por definir",
+      "dia": "—",
+      "foco": "por definir",
+      "sig": "por definir",
+      "esp": "por definir"
+    },
+    {
+      "n": "Renew Deep Wellness COL",
+      "e": "x",
+      "pelota": "Mauricio",
+      "etapa": "por definir",
+      "dia": "—",
+      "foco": "por definir",
+      "sig": "por definir",
+      "esp": "por definir"
+    },
+    {
+      "n": "AffirmFirst",
+      "e": "x",
+      "pelota": "Jesús",
+      "etapa": "por definir",
+      "dia": "—",
+      "foco": "por definir",
+      "sig": "por definir",
+      "esp": "por definir"
+    }
   ],
-  objetivos: [
-    {s:"d",t:"Plan Dolcezza terminado y en revisión"},
-    {s:"d",t:"Equilibre firmado — Karen Martínez"},
-    {s:"d",t:"Aborígenes — inversión real verificada ($3.9M COP)"},
-    {s:"w",t:"DNA GB v2 — fuentes completas, en redacción"},
-    {s:"w",t:"Centro de Mando — arrancando"}
+  "semana": [
+    {
+      "d": "Lun",
+      "m": "Georgina B."
+    },
+    {
+      "d": "Mar",
+      "m": "Equilibre"
+    },
+    {
+      "d": "Mié",
+      "m": "Aborígenes"
+    },
+    {
+      "d": "Jue",
+      "m": "Marie Louise",
+      "hoy": true
+    },
+    {
+      "d": "Vie",
+      "m": "SEDI + overflow"
+    }
   ],
-  esperando: [
-    {q:"José",t:"Números de la MARKETOR-608",d:"Lo único que falta para decidir si se corta",age:"48 h",hot:true},
-    {q:"José",t:"Fotos de producto de GB",d:"Sin fotos el DNA llega hasta donde llega el texto",age:"48 h",hot:true},
-    {q:"Mauricio",t:"Los 3 datos de Aborígenes",d:"Stats Ads Manager · facturación junio · rubros",age:"nuevo",hot:false},
-    {q:"Mauricio",t:"Resultado de la junta de SEDI",d:"La junta fue el miércoles, sin noticia escrita",age:"48 h",hot:true},
-    {q:"Mauricio",t:"Tabla de fees de la base instalada",d:"Prerrequisito para saber cuántos clientes aguantamos",age:"48 h",hot:false},
-    {q:"Cliente",t:"Corchetes del acuerdo de Aborígenes",d:"Lo único que falta para cerrarlo",age:"3 días",hot:true}
+  "gente": [
+    {
+      "i": "M",
+      "c": "var(--mauro)",
+      "n": "Mauricio",
+      "t": "Reunión Equilibre 11am · los 3 datos de Aborígenes · resultado junta SEDI · envío del Plan Dolcezza",
+      "blk": ""
+    },
+    {
+      "i": "S",
+      "c": "var(--samuel)",
+      "n": "Samuel",
+      "t": "DNA GB v2 con el dossier · workflow estación por estación · colegio y entreno",
+      "blk": ""
+    },
+    {
+      "i": "J",
+      "c": "var(--jesus)",
+      "n": "Jesús",
+      "t": "Producción en espera de la parrilla nueva",
+      "blk": "⏸ bloqueado por: DNA de GB"
+    },
+    {
+      "i": "J",
+      "c": "var(--jose)",
+      "n": "José",
+      "t": "Números MARKETOR-608 · fotos de producto GB · ajustes ML Cali/USA",
+      "blk": ""
+    },
+    {
+      "i": "AI",
+      "c": "var(--ai)",
+      "n": "RDW-AI",
+      "t": "Cowork: DNA y documentos · el hub: bóveda, briefs y este tablero",
+      "blk": ""
+    }
+  ],
+  "objetivos": [
+    {
+      "s": "d",
+      "t": "Plan Dolcezza terminado — en manos de Mauro para envío"
+    },
+    {
+      "s": "d",
+      "t": "Equilibre firmado — Karen Martínez"
+    },
+    {
+      "s": "d",
+      "t": "Aborígenes — inversión real verificada ($3.9M COP)"
+    },
+    {
+      "s": "d",
+      "t": "Centro de Mando v1 — publicado para el equipo"
+    },
+    {
+      "s": "w",
+      "t": "DNA GB v2 — dossier listo, se redacta mañana"
+    },
+    {
+      "s": "w",
+      "t": "La Máquina v2 — aterrizar el documento y publicarla"
+    }
+  ],
+  "esperando": [
+    {
+      "q": "José",
+      "t": "Números de la MARKETOR-608",
+      "d": "Lo único que falta para decidir si se corta",
+      "age": "48 h",
+      "hot": true
+    },
+    {
+      "q": "José",
+      "t": "Fotos de producto de GB",
+      "d": "Sin fotos el DNA llega hasta donde llega el texto",
+      "age": "48 h",
+      "hot": true
+    },
+    {
+      "q": "Mauricio",
+      "t": "Los 3 datos de Aborígenes",
+      "d": "Stats Ads Manager (2 cuentas) · facturación junio · rubros",
+      "age": "nuevo",
+      "hot": false
+    },
+    {
+      "q": "Mauricio",
+      "t": "Resultado de la junta de SEDI",
+      "d": "La junta fue el miércoles, sin noticia escrita",
+      "age": "48 h",
+      "hot": true
+    },
+    {
+      "q": "Mauricio",
+      "t": "Tabla de fees de la base instalada",
+      "d": "Prerrequisito para saber cuántos clientes aguantamos",
+      "age": "48 h",
+      "hot": false
+    },
+    {
+      "q": "Cliente",
+      "t": "Corchetes del acuerdo de Aborígenes",
+      "d": "Lo único que falta para cerrarlo",
+      "age": "3 días",
+      "hot": true
+    }
   ]
 };
 
