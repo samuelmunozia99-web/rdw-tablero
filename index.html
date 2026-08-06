@@ -155,14 +155,17 @@
 <script>
 /* ══════════════ BLOQUE DE DATOS — lo único que el hub reescribe ══════════════ */
 const RDW = {
-  "fecha": "06 ago 2026 · cierre",
+  "fecha": "07 ago 2026 · mediodía",
   "estaciones": [
-    "0 · Prospecto",
-    "1 · Estrategia",
-    "2 · DNA",
-    "3 · Contenido",
-    "4 · Pauta",
-    "5 · Reporte",
+    "01 · Entrada",
+    "02 · Diagnóstico",
+    "03 · Brand DNA",
+    "04 · Estrategia",
+    "05 · Producción de copy",
+    "06 · Filtro RDW",
+    "07 · Producción visual",
+    "08 · Pauta",
+    "🔁 Reporte",
     "— En pausa",
     "por definir"
   ],
@@ -170,28 +173,28 @@ const RDW = {
     {
       "n": "Georgina Barnes (UK)",
       "e": "g",
-      "pelota": "RDW-AI",
-      "etapa": "2 · DNA",
+      "pelota": "Mauricio",
+      "etapa": "03 · Brand DNA",
       "dia": "Lunes",
-      "foco": "Plan Dolcezza terminado · DNA v2 desde cero con el dossier",
-      "sig": "Diff de los 2 exports para datar la contaminación · redacción del DNA",
-      "esp": "Mauro: envío del plan · José: MARKETOR-608 y fotos"
+      "foco": "Plan v9 partnership GB×Dolcezza LISTO PARA ENVIAR",
+      "sig": "Mauro lo envía a Marc · interno: diff de los 2 DNA y redacción del v2",
+      "esp": "José: MARKETOR-608 y fotos de producto"
     },
     {
       "n": "Equilibre",
-      "e": "n",
+      "e": "g",
       "pelota": "Mauricio",
-      "etapa": "1 · Estrategia",
+      "etapa": "02 · Diagnóstico",
       "dia": "Martes",
-      "foco": "Arranque post-firma con Karen Martínez (500k+)",
-      "sig": "Reunión 11am · explorar Material Equilibre del Drive",
-      "esp": "Definiciones de la reunión de mañana"
+      "foco": "Reunión de arranque hecha · la segmentación heredada está mal",
+      "sig": "Hipersegmentación: analizar Shopify → ICP · explorar segmento tween",
+      "esp": "Accesos a Shopify (bloqueante) · ejemplo del caso tween"
     },
     {
       "n": "Aborígenes",
       "e": "y",
       "pelota": "Mauricio",
-      "etapa": "5 · Reporte",
+      "etapa": "🔁 Reporte",
       "dia": "Miércoles",
       "foco": "3 informes · convocatoria Ella Exporta África",
       "sig": "Edición final en una pasada al llegar los datos",
@@ -201,7 +204,7 @@ const RDW = {
       "n": "SEDI",
       "e": "y",
       "pelota": "Cliente",
-      "etapa": "0 · Prospecto",
+      "etapa": "01 · Entrada",
       "dia": "Viernes",
       "foco": "Oferta enviada · junta fue el miércoles",
       "sig": "Conocer el resultado de la junta",
@@ -286,14 +289,14 @@ const RDW = {
       "i": "M",
       "c": "var(--mauro)",
       "n": "Mauricio",
-      "t": "Reunión Equilibre 11am · los 3 datos de Aborígenes · resultado junta SEDI · envío del Plan Dolcezza",
+      "t": "Enviar el plan GB a Marc · accesos Shopify Equilibre · 3 datos Aborígenes · resultado SEDI",
       "blk": ""
     },
     {
       "i": "S",
       "c": "var(--samuel)",
       "n": "Samuel",
-      "t": "DNA GB v2 con el dossier · workflow estación por estación · colegio y entreno",
+      "t": "DNA GB v2 (diff primero) · hipersegmentación Equilibre · colegio y entreno",
       "blk": ""
     },
     {
@@ -321,11 +324,11 @@ const RDW = {
   "objetivos": [
     {
       "s": "d",
-      "t": "Plan Dolcezza terminado — en manos de Mauro para envío"
+      "t": "Plan GB×Dolcezza v9 partnership — listo para enviar"
     },
     {
       "s": "d",
-      "t": "Equilibre firmado — Karen Martínez"
+      "t": "Equilibre — reunión de arranque hecha y registrada"
     },
     {
       "s": "d",
@@ -337,7 +340,11 @@ const RDW = {
     },
     {
       "s": "w",
-      "t": "DNA GB v2 — dossier listo, se redacta mañana"
+      "t": "DNA GB v2 — dossier listo, en redacción"
+    },
+    {
+      "s": "w",
+      "t": "Equilibre — ICP con hipersegmentación"
     },
     {
       "s": "w",
@@ -349,42 +356,56 @@ const RDW = {
       "q": "José",
       "t": "Números de la MARKETOR-608",
       "d": "Lo único que falta para decidir si se corta",
-      "age": "48 h",
+      "age": "72 h",
       "hot": true
     },
     {
       "q": "José",
       "t": "Fotos de producto de GB",
       "d": "Sin fotos el DNA llega hasta donde llega el texto",
-      "age": "48 h",
+      "age": "72 h",
+      "hot": true
+    },
+    {
+      "q": "Mauricio",
+      "t": "Accesos a Shopify de Equilibre",
+      "d": "Bloqueante del análisis y de la hipersegmentación",
+      "age": "nuevo",
       "hot": true
     },
     {
       "q": "Mauricio",
       "t": "Los 3 datos de Aborígenes",
-      "d": "Stats Ads Manager (2 cuentas) · facturación junio · rubros",
-      "age": "nuevo",
+      "d": "Stats Ads Manager (2 cuentas, abr-jun) · facturación junio · rubros",
+      "age": "24 h",
       "hot": false
     },
     {
       "q": "Mauricio",
       "t": "Resultado de la junta de SEDI",
       "d": "La junta fue el miércoles, sin noticia escrita",
-      "age": "48 h",
+      "age": "72 h",
       "hot": true
+    },
+    {
+      "q": "Mauricio",
+      "t": "Ejemplo del caso skincare tween",
+      "d": "Convierte la referencia oral en dato con fuente",
+      "age": "nuevo",
+      "hot": false
     },
     {
       "q": "Mauricio",
       "t": "Tabla de fees de la base instalada",
       "d": "Prerrequisito para saber cuántos clientes aguantamos",
-      "age": "48 h",
+      "age": "72 h",
       "hot": false
     },
     {
       "q": "Cliente",
       "t": "Corchetes del acuerdo de Aborígenes",
       "d": "Lo único que falta para cerrarlo",
-      "age": "3 días",
+      "age": "4 días",
       "hot": true
     }
   ]
