@@ -82,12 +82,14 @@ def main() -> None:
     INDEX.write_text(html.replace(viejo, a_js(payload)), encoding="utf-8")
     print(f"✓ index.html reescrito (solo el bloque RDW) — fecha: {payload['fecha']}")
 
+    escribir_estado(payload)
+
     BOVEDA_COPIA.parent.mkdir(parents=True, exist_ok=True)
     BOVEDA_COPIA.write_text(INDEX.read_text(encoding="utf-8"), encoding="utf-8")
     print(f"✓ copia en la bóveda: {BOVEDA_COPIA}")
 
     if push:
-        subprocess.run(["git", "-C", str(REPO), "add", "index.html"], check=True)
+        subprocess.run(["git", "-C", str(REPO), "add", "index.html", "estado.md"], check=True)
         r = subprocess.run(["git", "-C", str(REPO), "diff", "--cached", "--quiet"])
         if r.returncode == 0:
             print("· sin cambios que publicar")
@@ -97,6 +99,40 @@ def main() -> None:
         subprocess.run(["git", "-C", str(REPO), "push"], check=True)
         print(f"✓ push hecho — verificando el build de Pages…")
         verificar_build(payload["fecha"])
+
+
+def escribir_estado(p: dict) -> None:
+    """El tablero pinta con JavaScript y los briefs automáticos no lo ejecutan —
+    ven la casa sin muebles. estado.md es el mismo contenido en texto plano
+    (regla del 2026-08-08). Misma corrida, mismo push, misma verificación."""
+    EST = {"g": "ACTIVA", "y": "ESPERANDO", "n": "ARRANCANDO", "p": "EN PAUSA", "x": "POR DEFINIR"}
+    L = ["# RDW — Estado en texto plano",
+         "",
+         f"**Último cierre: {p['fecha']}**",
+         "(Generado por actualizar_tablero.py en la misma corrida que el tablero visual.)",
+         "", "## Las marcas", ""]
+    for m in p["marcas"]:
+        L.append(f"- **{m['n']}** · {EST.get(m['e'], m['e'])} · {m['etapa']} · "
+                 f"pelota: {m['pelota']} — {m['foco']}. Siguiente: {m['sig']}")
+    L += ["", "## La semana", ""]
+    L.append(" · ".join(f"{d['d']}: {d['m']}" + (" ← foco de hoy" if d.get("hoy") else "")
+                        for d in p["semana"]))
+    L += ["", "## Esperando (quién debe qué)", ""]
+    for w in p["esperando"]:
+        L.append(f"- **{w['q']}**: {w['t']} — {w['d']} [{w['age']}]"
+                 + (" 🔥" if w.get("hot") else ""))
+    L += ["", "---", "", "## Pendientes (00 PENDIENTES.md de la bóveda)", ""]
+    pend = Path.home() / "RDW" / "boveda" / "00 PENDIENTES.md"
+    if pend.exists():
+        cuerpo = pend.read_text(encoding="utf-8")
+        # sin el frontmatter YAML
+        if cuerpo.startswith("---"):
+            cuerpo = cuerpo.split("---", 2)[-1].lstrip("\n")
+        L.append(cuerpo)
+    else:
+        L.append("(00 PENDIENTES.md no encontrado en la bóveda)")
+    (REPO / "estado.md").write_text("\n".join(L) + "\n", encoding="utf-8")
+    print("✓ estado.md generado (texto plano para briefs)")
 
 
 def verificar_build(fecha: str) -> None:
