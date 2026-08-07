@@ -95,7 +95,51 @@ def main() -> None:
         subprocess.run(["git", "-C", str(REPO), "commit", "-m",
                         f"Tablero: actualización {payload['fecha']}"], check=True)
         subprocess.run(["git", "-C", str(REPO), "push"], check=True)
-        print(f"✓ publicado — la página se actualiza en ~1 min: {URL}")
+        print(f"✓ push hecho — verificando el build de Pages…")
+        verificar_build(payload["fecha"])
+
+
+def verificar_build(fecha: str) -> None:
+    """Regla (2026-08-08): un push que no publica es como no haber escrito nada.
+
+    Espera a que el build de Pages termine y confirma que la página sirve la
+    fecha nueva. Sale con error si el build falla; avisa si va lento (los 3
+    fallos del 8-ago tardaron 10-30 min en runners de GitHub caídos)."""
+    import json, time, urllib.request
+    sha = subprocess.run(["git", "-C", str(REPO), "rev-parse", "HEAD"],
+                         capture_output=True, text=True).stdout.strip()[:7]
+    api = "https://api.github.com/repos/samuelmunozia99-web/rdw-tablero/actions/runs?per_page=3"
+    for i in range(60):  # hasta ~5 min
+        time.sleep(5)
+        try:
+            runs = json.load(urllib.request.urlopen(api))["workflow_runs"]
+        except Exception:
+            continue
+        run = next((r for r in runs if r["head_sha"].startswith(sha)), None)
+        if not run:
+            continue
+        if run["status"] == "completed":
+            if run["conclusion"] == "success":
+                print(f"✓ build de Pages EN VERDE ({sha})")
+                break
+            sys.exit(f"❌ BUILD DE PAGES FALLÓ ({run['conclusion']}) — el tablero NO se "
+                     f"publicó. Revisar: https://github.com/samuelmunozia99-web/rdw-tablero/actions\n"
+                     f"   (Si el error es de runners de GitHub, reintentar con 'Re-run jobs'.)")
+    else:
+        sys.exit(f"⚠️ El build lleva 5+ min sin terminar (patrón de los fallos del 8-ago). "
+                 f"Verificar a mano: https://github.com/samuelmunozia99-web/rdw-tablero/actions")
+    # el CDN cachea 10 min la URL limpia; el cache-buster ve el origen directo
+    for _ in range(12):
+        try:
+            html = urllib.request.urlopen(f"{URL}?cb={int(time.time())}").read().decode("utf-8")
+            if fecha in html:
+                print(f"✓ verificado: la página pública ya sirve «{fecha}» — {URL}")
+                print("  (la URL sin parámetros puede tardar hasta 10 min más por el caché del CDN)")
+                return
+        except Exception:
+            pass
+        time.sleep(10)
+    sys.exit("⚠️ El build pasó pero la página aún no sirve la fecha nueva — verificar a mano.")
 
 
 if __name__ == "__main__":
