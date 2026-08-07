@@ -101,38 +101,62 @@ def main() -> None:
         verificar_build(payload["fecha"])
 
 
+EST = {"g": "ACTIVA", "y": "ESPERANDO", "n": "ARRANCANDO", "p": "EN PAUSA", "x": "POR DEFINIR"}
+
+
 def escribir_estado(p: dict) -> None:
     """El tablero pinta con JavaScript y los briefs automáticos no lo ejecutan —
-    ven la casa sin muebles. estado.md es el mismo contenido en texto plano
-    (regla del 2026-08-08). Misma corrida, mismo push, misma verificación."""
-    EST = {"g": "ACTIVA", "y": "ESPERANDO", "n": "ARRANCANDO", "p": "EN PAUSA", "x": "POR DEFINIR"}
-    L = ["# RDW — Estado en texto plano",
-         "",
-         f"**Último cierre: {p['fecha']}**",
-         "(Generado por actualizar_tablero.py en la misma corrida que el tablero visual.)",
-         "", "## Las marcas", ""]
+    ven la casa sin muebles. Por eso hay dos archivos planos (regla 2026-08-08):
+
+    - estado.md (PÚBLICO, en el repo): QUIÉN debe QUÉ, nunca POR QUÉ está mal.
+      Sin diagnósticos, sin cifras, sin datos personales. Regla del protocolo:
+      nada entra aquí si no se lo mostraríamos al cliente del que habla.
+    - estado-privado.md (BÓVEDA, jamás al repo del tablero): el estado completo
+      con focos, diagnósticos y el 00 PENDIENTES embebido. Los briefs lo leen
+      por el puente cuando el Mac está encendido; el público es el respaldo.
+    """
+    semana = " · ".join(f"{d['d']}: {d['m']}" + (" ← foco de hoy" if d.get("hoy") else "")
+                        for d in p["semana"])
+
+    # ── PÚBLICO ──
+    L = ["# RDW — Estado", "",
+         f"**Último cierre: {p['fecha']}**", "",
+         "## Las marcas", ""]
     for m in p["marcas"]:
         L.append(f"- **{m['n']}** · {EST.get(m['e'], m['e'])} · {m['etapa']} · "
-                 f"pelota: {m['pelota']} — {m['foco']}. Siguiente: {m['sig']}")
-    L += ["", "## La semana", ""]
-    L.append(" · ".join(f"{d['d']}: {d['m']}" + (" ← foco de hoy" if d.get("hoy") else "")
-                        for d in p["semana"]))
-    L += ["", "## Esperando (quién debe qué)", ""]
+                 f"la pelota la tiene: {m['pelota']}")
+    L += ["", "## La semana", "", semana, "", "## Quién debe qué", ""]
+    for w in p["esperando"]:
+        if w.get("priv"):
+            continue
+        L.append(f"- **{w['q']}**: {w['t']}")
+    (REPO / "estado.md").write_text("\n".join(L) + "\n", encoding="utf-8")
+    print("✓ estado.md (público, neutro) generado")
+
+    # ── PRIVADO ──
+    L = ["# RDW — Estado PRIVADO (no sale de la bóveda)", "",
+         f"**Último cierre: {p['fecha']}**", "",
+         "## Las marcas", ""]
+    for m in p["marcas"]:
+        L.append(f"- **{m['n']}** · {EST.get(m['e'], m['e'])} · {m['etapa']} · "
+                 f"pelota: {m['pelota']} — {m['foco']}. Siguiente: {m['sig']}. "
+                 f"Espera: {m['esp']}")
+    L += ["", "## La semana", "", semana, "", "## Esperando (con el porqué)", ""]
     for w in p["esperando"]:
         L.append(f"- **{w['q']}**: {w['t']} — {w['d']} [{w['age']}]"
                  + (" 🔥" if w.get("hot") else ""))
-    L += ["", "---", "", "## Pendientes (00 PENDIENTES.md de la bóveda)", ""]
+    L += ["", "---", "", "## Pendientes (00 PENDIENTES.md)", ""]
     pend = Path.home() / "RDW" / "boveda" / "00 PENDIENTES.md"
     if pend.exists():
         cuerpo = pend.read_text(encoding="utf-8")
-        # sin el frontmatter YAML
         if cuerpo.startswith("---"):
             cuerpo = cuerpo.split("---", 2)[-1].lstrip("\n")
         L.append(cuerpo)
     else:
-        L.append("(00 PENDIENTES.md no encontrado en la bóveda)")
-    (REPO / "estado.md").write_text("\n".join(L) + "\n", encoding="utf-8")
-    print("✓ estado.md generado (texto plano para briefs)")
+        L.append("(00 PENDIENTES.md no encontrado)")
+    privado = Path.home() / "RDW" / "boveda" / "07 SISTEMA" / "estado-privado.md"
+    privado.write_text("\n".join(L) + "\n", encoding="utf-8")
+    print(f"✓ estado-privado.md generado en la bóveda (no se publica)")
 
 
 def verificar_build(fecha: str) -> None:
